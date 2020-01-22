@@ -24,6 +24,8 @@ cd webrtc
     | grep -v /mock_ \
     | grep -v _neon.c \
     | grep -v _mips.c \
+    | grep -v _sse.c \
+    | grep -v _sse2.c \
     | grep -v fixed_gain_controller.cc \
     | grep -v _json.cc
 
