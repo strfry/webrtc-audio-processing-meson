@@ -6,5 +6,5 @@ int main() {
 
     int result = webrtc_aec_init(&aec_context, "{}");
 
-    webrtc_aec_destroy(&aec_context);
+    webrtc_aec_destroy(aec_context);
 }
