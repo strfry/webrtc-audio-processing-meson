@@ -2,12 +2,16 @@
 
 #include "webrtc/modules/audio_processing/audio_processing_impl.h"
 
+#include "aec.h"
+
 
 using webrtc::AudioFrame;
 
 using webrtc::AudioProcessing;
 using webrtc::AudioProcessingBuilder;
 using webrtc::ProcessingConfig;
+
+namespace {
 
 std::unique_ptr<AudioProcessing> CreateApm(bool mobile_aec) {
     using webrtc::Config;
@@ -47,7 +51,7 @@ void SetFrameSampleRate(AudioFrame* frame, int sample_rate_hz) {
   frame->samples_per_channel_ =
       AudioProcessing::kChunkSizeMs * sample_rate_hz / 1000;
 }
-
+} // end namespace
 
 // mock googletest ;DDD
 #define EXPECT_EQ(a, b) assert((a) == (b));
@@ -104,3 +108,13 @@ int main() {
     EXPECT_NE(*stats.echo_return_loss_enhancement, -100.0);
 }
 
+
+int c_main() {
+    struct webrtc_aec *aec_context;
+
+    int result = webrtc_aec_init(&aec_context, "{}");
+
+    webrtc_aec_destroy(aec_context);
+
+    return result;
+}

@@ -1,24 +1,20 @@
 #include "modules/audio_processing/include/audio_processing.h"
 
+#include "aec.h"
+
 using namespace webrtc;
 
-extern "C" {
-	#include "aec.h"
-}
-
-struct webrtc_aec{};
-
-struct AudioProcessingContext : webrtc_aec {
-	std::unique_ptr<AudioProcessing> proc;
+struct webrtc_aec {
+  AudioProcessing* proc{};
 };
 
+using AudioProcessingContext = webrtc_aec; // More C++-like name
 
-std::unique_ptr<AudioProcessing> CreateApm(bool mobile_aec) {
-//  using webrtc::Config;
+namespace {
 
+auto CreateApm(bool mobile_aec) -> AudioProcessing* {
   Config old_config;
-  std::unique_ptr<AudioProcessing> apm(
-      AudioProcessingBuilder().Create(old_config));
+  auto apm = AudioProcessingBuilder().Create(old_config);
   if (!apm) {
     return apm;
   }
@@ -42,8 +38,12 @@ std::unique_ptr<AudioProcessing> CreateApm(bool mobile_aec) {
   apm_config.level_estimation.enabled = false;
   apm_config.voice_detection.enabled = false;
   apm->ApplyConfig(apm_config);
+
   return apm;
 }
+
+} // end namespace
+
 
 extern "C"
 int webrtc_aec_init(struct webrtc_aec** aec, const char* config_json) {
@@ -51,7 +51,7 @@ int webrtc_aec_init(struct webrtc_aec** aec, const char* config_json) {
 
 	const bool use_mobile_aec = false;
 
-	AudioProcessingContext* context = new AudioProcessingContext;
+	auto context = new AudioProcessingContext;
 	*aec = context;
 
 	context->proc = ::CreateApm(use_mobile_aec); 
@@ -61,6 +61,8 @@ int webrtc_aec_init(struct webrtc_aec** aec, const char* config_json) {
 
 extern "C"
 void webrtc_aec_destroy(struct webrtc_aec* aec) {
-	delete static_cast<AudioProcessingContext*>(aec);
+  auto context = static_cast<AudioProcessingContext*>(aec);
+  context->proc->Release();
+  delete context;
 }
 

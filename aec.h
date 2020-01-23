@@ -1,4 +1,4 @@
-#ifdef __cplusplus__
+#ifdef __cplusplus
 extern "C" {
 #endif
 
@@ -25,6 +25,6 @@ void webrtc_aec_destroy(struct webrtc_aec*);
 //int webrtc_aec_process_recording
 
 
-#ifdef __cplusplus__
+#ifdef __cplusplus
 }
 #endif
