@@ -2,6 +2,9 @@
 
 #include "webrtc/modules/audio_processing/audio_processing_impl.h"
 
+
+using webrtc::AudioFrame;
+
 using webrtc::AudioProcessing;
 using webrtc::AudioProcessingBuilder;
 using webrtc::ProcessingConfig;
@@ -38,6 +41,14 @@ std::unique_ptr<AudioProcessing> CreateApm(bool mobile_aec) {
   return apm;
 }
 
+
+void SetFrameSampleRate(AudioFrame* frame, int sample_rate_hz) {
+  frame->sample_rate_hz_ = sample_rate_hz;
+  frame->samples_per_channel_ =
+      AudioProcessing::kChunkSizeMs * sample_rate_hz / 1000;
+}
+
+
 // mock googletest ;DDD
 #define EXPECT_EQ(a, b) assert((a) == (b));
 #define EXPECT_GE(a, b) assert((a) >= (b));
@@ -63,7 +74,7 @@ int main() {
     // Set up an audioframe.
     AudioFrame frame;
     frame.num_channels_ = 1;
-    //SetFrameSampleRate(&frame, AudioProcessing::NativeRate::kSampleRate32kHz);
+    SetFrameSampleRate(&frame, AudioProcessing::NativeRate::kSampleRate32kHz);
 
     // Fill the audio frame with a sawtooth pattern.
     int16_t* ptr = frame.mutable_data();
