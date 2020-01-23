@@ -74,6 +74,14 @@ webrtc_files += files(
     'third_party/pffft/src/pffft.h'
 )
 
+if host_machine.cpu() == 'x86_64'
+    webrtc_files += files(
+        'webrtc/modules/audio_processing/utility/ooura_fft_sse2.cc',
+        'webrtc/common_audio/resampler/sinc_resampler_sse.cc',
+        'webrtc/common_audio/fir_filter_sse.cc',
+    )
+endif
+
 libwebrtc_audio_processing = static_library(
   'webrtc_audio_processing',
   webrtc_files,
