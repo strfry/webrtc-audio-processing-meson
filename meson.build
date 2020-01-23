@@ -87,6 +87,12 @@ if host_machine.cpu() == 'x86_64'
     )
 endif
 
+link_args = []
+
+if host_machine.system() != 'android'
+    link_args += '-lpthread'
+endif
+
 libwebrtc_audio_processing = static_library(
   'webrtc_audio_processing',
   webrtc_files,
